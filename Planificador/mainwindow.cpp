@@ -25,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // initialize axis range (and scroll bar positions via signals we just connected):
     ui->Graph->xAxis->setRange(0, 10, Qt::AlignCenter);
     ui->Graph->yAxis->setRange(0, 10, Qt::AlignCenter);
-    ui->Graph->xAxis->setLabel("Eje X");
-    ui->Graph->yAxis->setLabel("Eje Y");
+    ui->Graph->xAxis->setLabel("Tiempo");
+    ui->Graph->yAxis->setLabel("Proceso");
 
 
     ui->tableWidget->setColumnCount(6);
@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     F=0;
     f=-1;
 
-    Graficar();
+    //Graficar();
 
 }
 
