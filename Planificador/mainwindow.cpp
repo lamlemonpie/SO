@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QTimer>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -46,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     F=0;
     f=-1;
 
-    //Graficar();
+
 
 }
 
@@ -63,16 +65,55 @@ void MainWindow::Graficar()
   ui->Graph->graph()->setPen(QPen(Qt::blue));
   //ui->Graph->graph()->setBrush(QBrush(QColor(0, 0, 255, 20)));
 
+  //Funcion Encargada de Graficar
   QVector<double> x(10000), y(10000);
-  for(int i = 0; i < 10000; i++)
+
+
+  //x[0] = 2; y[0] = 0;
+  //x[1] = 8; y[1] = 1;
+  //x[2] = 12; y[2] = 2;
+  x[0] = std::get<1>( Procesos[0] ); y[0] = 0;
+
+ for(unsigned long i = 1, j=0; j<Procesos.size(); ++i, ++j)
   {
-     x[i] = i/50.0-100;
-     y[i] = x[i]*x[i];
+
+          x[i] = std::get<2>(Procesos[j]) + x[i-1];
+          y[i] = y[i-1] + 1;
+
+
   }
 
 
-  ui->Graph->graph(0)->setData(x,y);
+  /*for( unsigned long i=0,j=0; i<Procesos.size(); i++)
+    {
+        //y[j]= 0; x[j] = 0; j++;
 
+        if(i==0)
+        {
+            y[j] = 1;
+            x[j] = 0; std::cout << "(" << x[j] << "," << y[j] << ")"  << endl ;
+
+            y[j+1] = 1;
+            x[j+1] = std::get<2>( Procesos[i] ); std::cout << "(" << x[j+1] << "," << y[j+1] << ")"  << endl ;
+            j = j + 2;
+        }
+        else
+        {
+            y[j] = y[j-1] + 1;
+            x[j] = x[j-1]; std::cout << "(" << x[j] << "," << y[j] << ")"  << endl ;
+
+            y[j+1] = y[j];
+            x[j+1] = std::get<2>( Procesos[i] ) + x[j-1]; std::cout << "(" << x[j+1] << "," << y[j+1] << ")"  << endl ;
+            j = j + 2 ;
+        }
+
+
+    }*/
+
+
+  ui->Graph->graph(0)->setData(x,y);
+  ui->Graph->graph(0)->setLineStyle(QCPGraph::lsStepRight);
+  ui->Graph->replot();
 
   ui->Graph->axisRect()->setupFullAxesBox(true);
   ui->Graph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
@@ -224,6 +265,11 @@ void MainWindow::on_pushButton_2_clicked()
 
     ui->TRP->setText(QString::number(R_promedio));
     ui->TRNP->setText(QString::number(RN_promedio));
+
+
+    Graficar();
+
+
 }
 
 void MainWindow::horzScrollBarChanged(int value)

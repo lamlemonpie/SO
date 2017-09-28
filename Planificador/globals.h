@@ -2,11 +2,11 @@
 #define GLOBALS_H
 
 
-//#include <QVector.h>
-//#include <QTimer>
+#include <QVector.h>
 
-//extern int TimeElapsed;
-//extern QVector<double> x2, y2;
-//extern QTimer* playBackTimer; //crear una instancia de temporizador
+
+extern int TimeElapsed;
+extern QVector<double> x2, y2;
+
 
 #endif // GLOBALS_H
