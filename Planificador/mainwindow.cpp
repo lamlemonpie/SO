@@ -117,6 +117,11 @@ void MainWindow::Graficar()
 
   ui->Graph->axisRect()->setupFullAxesBox(true);
   ui->Graph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+
+  //Borrar anterior operacion
+  Procesado.clear();
+  R_promedio = 0;
+  RN_promedio = 0;
 }
 
 
@@ -171,7 +176,7 @@ void MainWindow::procesando(){
 
     for (auto i: Procesos){
         if(primero == false){
-            fin = std::get<2>(i);
+            fin = std::get<2>(i) + std::get<1>(i);
             primero = true;
             ant_finalizado = fin;
         }
@@ -195,8 +200,12 @@ void MainWindow::procesando(){
 
 void MainWindow::on_pushButton_3_clicked()
 {
-//    ui->tableWidget->removeRow(f);
-    close();
+    Procesos.clear();
+    Procesado.clear();
+    R_promedio = 0;
+    RN_promedio = 0;
+    ui->tableWidget->setRowCount(0);
+    //close();
 }
 
 //Al hacer click
@@ -268,7 +277,6 @@ void MainWindow::on_pushButton_2_clicked()
 
 
     Graficar();
-
 
 }
 
