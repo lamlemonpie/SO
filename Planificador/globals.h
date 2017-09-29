@@ -5,7 +5,7 @@
 //#include <QVector.h>
 
 
-extern int TimeElapsed;
+//extern int TimeElapsed;
 //extern QVector<double> x2, y2;
 
 

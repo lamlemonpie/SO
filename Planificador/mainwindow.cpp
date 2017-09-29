@@ -68,10 +68,6 @@ void MainWindow::Graficar()
   //Funcion Encargada de Graficar
   QVector<double> x(10000), y(10000);
 
-
-  //x[0] = 2; y[0] = 0;
-  //x[1] = 8; y[1] = 1;
-  //x[2] = 12; y[2] = 2;
   x[0] = std::get<1>( Procesos[0] ); y[0] = 0;
 
  for(unsigned long i = 1, j=0; j<Procesos.size(); ++i, ++j)
@@ -110,7 +106,20 @@ void MainWindow::Graficar()
 
     }*/
 
+ //Nombre de los Procesos
+ QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
 
+    textTicker->addTick(0, "Nada");
+ for (unsigned long i = 1; i<=Procesos.size(); i++)
+  {
+      textTicker->addTick(i, QString::fromStdString( std::get<0>( Procesos[i-1] ) ) );
+
+  }
+
+  //Añadir nombre de procesos dentro de la gráfica
+  ui->Graph->yAxis->setTicker(textTicker);
+
+  //Añadiendo puntos a graficar.
   ui->Graph->graph(0)->setData(x,y);
   ui->Graph->graph(0)->setLineStyle(QCPGraph::lsStepRight);
   ui->Graph->replot();
