@@ -68,43 +68,34 @@ void MainWindow::Graficar()
   //Funcion Encargada de Graficar
   QVector<double> x(10000), y(10000);
 
-  x[0] = std::get<1>( Procesos[0] ); y[0] = 0;
+  x[0] = 0; y[0] = 0;
 
  for(unsigned long i = 1, j=0; j<Procesos.size(); ++i, ++j)
   {
 
-          x[i] = std::get<2>(Procesos[j]) + x[i-1];
-          y[i] = y[i-1] + 1;
+     if( std::get<1>(Procesos[j]) < x[i-1] )
+     {
 
+         x[i] = std::get<2>(Procesos[j]) + x[i-1];
+         y[i] = y[i-1] + 1;
+
+     }
+
+     else
+          {
+
+              x[i] = std::get<1>( Procesos[j] );
+              y[i] = 0;
+
+              x[i+1] = std::get<2>(Procesos[j]) + x[i];
+              y[i+1] = y[i-1] + 1;
+
+              ++i;
+          }
 
   }
 
 
-  /*for( unsigned long i=0,j=0; i<Procesos.size(); i++)
-    {
-        //y[j]= 0; x[j] = 0; j++;
-
-        if(i==0)
-        {
-            y[j] = 1;
-            x[j] = 0; std::cout << "(" << x[j] << "," << y[j] << ")"  << endl ;
-
-            y[j+1] = 1;
-            x[j+1] = std::get<2>( Procesos[i] ); std::cout << "(" << x[j+1] << "," << y[j+1] << ")"  << endl ;
-            j = j + 2;
-        }
-        else
-        {
-            y[j] = y[j-1] + 1;
-            x[j] = x[j-1]; std::cout << "(" << x[j] << "," << y[j] << ")"  << endl ;
-
-            y[j+1] = y[j];
-            x[j+1] = std::get<2>( Procesos[i] ) + x[j-1]; std::cout << "(" << x[j+1] << "," << y[j+1] << ")"  << endl ;
-            j = j + 2 ;
-        }
-
-
-    }*/
 
  //Nombre de los Procesos
  QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
@@ -112,7 +103,8 @@ void MainWindow::Graficar()
     textTicker->addTick(0, "Nada");
  for (unsigned long i = 1; i<=Procesos.size(); i++)
   {
-      textTicker->addTick(i, QString::fromStdString( std::get<0>( Procesos[i-1] ) ) );
+
+     textTicker->addTick(i, QString::fromStdString( std::get<0>( Procesos[i-1] ) ) );
 
   }
 
