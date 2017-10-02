@@ -113,16 +113,31 @@ void MainWindow::Graficar()
  //Nombre de los Procesos
  QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
 
-    textTicker->addTick(0, "Nada");
- for (unsigned long i = 1; i<=Procesos.size(); i++)
-  {
+ textTicker->addTick(0, "Nada");
 
-     textTicker->addTick(i, QString::fromStdString( std::get<0>( Procesos[i-1] ) ) );
+ for( auto i: posiciones )
+ {
+    textTicker->addTick( i.second, QString::fromStdString(i.first)  );
+ }
 
-  }
-
-  //Añadir nombre de procesos dentro de la gráfica
   ui->Graph->yAxis->setTicker(textTicker);
+
+
+  //Tiempos de llegada
+  QSharedPointer<QCPAxisTickerText> textTickerTLL(new QCPAxisTickerText);
+
+     textTickerTLL->addTick(0, "Inicio");
+  for (unsigned long i = 1; i<=Procesos.size(); i++)
+   {
+
+      //textTicker->addTick(i, QString::fromStdString( std::get<0>( Procesos[i-1] ) ) );
+      textTickerTLL->addTick(  std::get<1>( Procesos[i-1] ) , QString::fromStdString(std::to_string( std::get<1>( Procesos[i-1] )   ) + " \n Llega \n Proceso \n " + std::get<0>(Procesos[i-1])) );
+
+   }
+    ui->Graph->xAxis->setTicker(textTickerTLL);
+
+
+
 
   //Añadiendo puntos a graficar.
   ui->Graph->graph(0)->setData(x,y);
