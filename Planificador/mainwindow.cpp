@@ -65,9 +65,20 @@ void MainWindow::Graficar()
   ui->Graph->graph()->setPen(QPen(Qt::blue));
   //ui->Graph->graph()->setBrush(QBrush(QColor(0, 0, 255, 20)));
 
-  //Funcion Encargada de Graficar
+  //Vectores de puntos.
   QVector<double> x(10000), y(10000);
 
+  //Mapa de Posiciones.
+  std::map < std::string, int > posiciones;
+
+
+  //Introducimos las posiciones.
+  for( unsigned long i = 0; i<Procesos.size(); ++i )
+  {
+      posiciones.insert( std::pair<std::string,int>(std::get<0>( Procesos[i] ) , i+1) );
+  }
+
+  //Iniciando vector de puntos.
   x[0] = 0; y[0] = 0;
 
  for(unsigned long i = 1, j=0; j<Procesos.size(); ++i, ++j)
@@ -77,7 +88,8 @@ void MainWindow::Graficar()
      {
 
          x[i] = std::get<2>(Procesos[j]) + x[i-1];
-         y[i] = y[i-1] + 1;
+         //y[i] = y[i-1] + 1;
+         y[i] = posiciones.find( std::get<0>( Procesos[j] ) )->second;
 
      }
 
@@ -88,7 +100,8 @@ void MainWindow::Graficar()
               y[i] = 0;
 
               x[i+1] = std::get<2>(Procesos[j]) + x[i];
-              y[i+1] = y[i-1] + 1;
+              //y[i+1] = y[i-1] + 1;
+              y[i+1] = posiciones.find( std::get<0>( Procesos[j] ) )->second;
 
               ++i;
           }
