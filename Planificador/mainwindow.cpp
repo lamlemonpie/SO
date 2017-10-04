@@ -77,10 +77,59 @@ void MainWindow::GenerarPuntos()
     //x1[0] = 0; y1[0] = 0;
     x1.push_back(0); y1.push_back(0);
 
+
+    for(auto i: Procesos)
+    {
+
+        if( std::get<1>(i) <= x1.last() )
+        {
+
+            double tmp = x1.last() + 1;
+            double tmp2 = std::get<2>(i) + x1.last();
+
+            while( tmp <= tmp2 )
+            {
+
+                x1.push_back(tmp);
+                y1.push_back( posiciones.find(std::get<0>(i))->second  );
+                tmp++;
+            }
+
+        }
+        else
+        {
+
+            double tmp = x1.last() + 1;
+            double tmp2 = std::get<1>(i) + x1.last();
+
+            while( tmp <= tmp2)
+            {
+
+                x1.push_back(tmp );
+                y1.push_back(0);
+                tmp++;
+            }
+
+            tmp = x1.last() + 1;
+            tmp2 = std::get<2>(i) + x1.last();
+
+            while(tmp <= tmp2)
+            {
+
+                x1.push_back(tmp);
+                y1.push_back(posiciones.find( std::get<0>( i ) )->second);
+
+                tmp++;
+            }
+
+        }
+
+    }
+    /*
    for(unsigned long i = 1, j=0; j<Procesos.size(); ++i, ++j)
     {
 
-       if( std::get<1>(Procesos[j]) <= x1[i-1]  )
+       if( std::get<1>(Procesos[j]) <= x1.last()  )
        {
 
            //x1[i] = std::get<2>(Procesos[j]) + x1[i-1];
@@ -99,6 +148,7 @@ void MainWindow::GenerarPuntos()
                 x1.push_back(std::get<1>( Procesos[j] ));
                 y1.push_back(0);
                 std::cout << "PO1: " << x1[i] << "-" << y1[i] << std::endl;
+
                 //x1[i+1] = std::get<2>(Procesos[j]) + x1[i];
                 x1.push_back(std::get<2>(Procesos[j]) + x1[i]);
                 //y[i+1] = y[i-1] + 1;
@@ -109,7 +159,7 @@ void MainWindow::GenerarPuntos()
             }
 
     }
-
+    */
 }
 
 
@@ -120,6 +170,9 @@ void MainWindow::Graficar()
   ui->Graph->addGraph();
   ui->Graph->graph()->setPen(QPen(Qt::blue));
   //ui->Graph->graph()->setBrush(QBrush(QColor(0, 0, 255, 20)));
+
+  ui->Graph->graph(0)->data()->clear();
+  ui->Graph->replot();
 
   //Vectores de puntos.
   //QVector<double> x(10000), y(10000); x1, y1
@@ -184,37 +237,6 @@ void MainWindow::Graficar()
 
 }
 
-void MainWindow::setupRealtimeDataDemo(QCustomPlot *customPlot)
-{
-
-  // include this section to fully disable antialiasing for higher performance:
-  /*
-  customPlot->setNotAntialiasedElements(QCP::aeAll);
-  QFont font;
-  font.setStyleStrategy(QFont::NoAntialias);
-  customPlot->xAxis->setTickLabelFont(font);
-  customPlot->yAxis->setTickLabelFont(font);
-  customPlot->legend->setFont(font);
-  */
-  customPlot->addGraph(); // blue line
-  customPlot->graph(0)->setPen(QPen(QColor(40, 110, 255)));
-  customPlot->addGraph(); // red line
-  customPlot->graph(1)->setPen(QPen(QColor(255, 110, 40)));
-
-  QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
-  timeTicker->setTimeFormat("%h:%m:%s");
-  customPlot->xAxis->setTicker(timeTicker);
-  customPlot->axisRect()->setupFullAxesBox();
-  customPlot->yAxis->setRange(-1.2, 1.2);
-
-  // make left and bottom axes transfer their ranges to right and top axes:
-  connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->xAxis2, SLOT(setRange(QCPRange)));
-  connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->yAxis2, SLOT(setRange(QCPRange)));
-
-  // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
-  connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-  dataTimer.start(0); // Interval 0 means to refresh as fast as possible
-}
 
 void MainWindow::realtimeDataSlot()
 {
@@ -226,10 +248,10 @@ void MainWindow::realtimeDataSlot()
   {
     // add data to lines:
 
-    std:: cout << pos << std:: endl;
+
 
     //std:: cout << key << " - "  << lastPointKey <<" = " << key - lastPointKey << std:: endl;
-    std:: cout << x1[pos] << "-" << y1[pos] << std::endl;
+    //std:: cout << x1[pos] << "-" << y1[pos] << std::endl;
     x2.push_back(x1[pos]);
     y2.push_back(y1[pos]);
     x1.pop_front();
@@ -238,7 +260,7 @@ void MainWindow::realtimeDataSlot()
     // rescale value (vertical) axis to fit the current data:
     //ui->Graph->graph(0)->rescaleValueAxis();
     //ui->Graph->graph(1)->rescaleValueAxis(true);
-    std:: cout << "tam: "<< x1.size() << std:: endl;
+    //std:: cout << "tam: "<< x1.size() << std:: endl;
     TimeElapsed = key;
 
     if(x1.size() == 0) {
@@ -263,68 +285,8 @@ void MainWindow::realtimeDataSlot()
 
 }
 
-/*
-
-void MainWindow::setupRealtimeDataDemo(QCustomPlot *customPlot)
-{
-
-  // include this section to fully disable antialiasing for higher performance:
-  /*
-  customPlot->setNotAntialiasedElements(QCP::aeAll);
-  QFont font;
-  font.setStyleStrategy(QFont::NoAntialias);
-  customPlot->xAxis->setTickLabelFont(font);
-  customPlot->yAxis->setTickLabelFont(font);
-  customPlot->legend->setFont(font);
-  */
- /* customPlot->addGraph(); // blue line
-  customPlot->graph(0)->setPen(QPen(QColor(40, 110, 255)));
-  customPlot->addGraph(); // red line
-  customPlot->graph(1)->setPen(QPen(QColor(255, 110, 40)));
-
-  QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
-  timeTicker->setTimeFormat("%h:%m:%s");
-  customPlot->xAxis->setTicker(timeTicker);
-  customPlot->axisRect()->setupFullAxesBox();
-  customPlot->yAxis->setRange(-1.2, 1.2);
-
-  // make left and bottom axes transfer their ranges to right and top axes:
-  connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->xAxis2, SLOT(setRange(QCPRange)));
-  connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->yAxis2, SLOT(setRange(QCPRange)));
-
-  // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
-  connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-  dataTimer.start(0); // Interval 0 means to refresh as fast as possible
-}
-*/
-
-/*
-void MainWindow::realtimeDataSlot()
-{
-  static QTime time(QTime::currentTime());
-  // calculate two new data points:
-  double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
-  static double lastPointKey = 0;
-  if (key-lastPointKey > 0.002) // at most add point every 2 ms
-  {
-    // add data to lines:
-    ui->Graph->graph(0)->addData(key, qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-    ui->Graph->graph(1)->addData(key, qCos(key)+qrand()/(double)RAND_MAX*0.5*qSin(key/0.4364));
-    // rescale value (vertical) axis to fit the current data:
-    //ui->Graph->graph(0)->rescaleValueAxis();
-    //ui->Graph->graph(1)->rescaleValueAxis(true);
-
-    lastPointKey = key;
-  }
-  // make key axis range scroll with the data (at a constant range size of 8):
-  ui->Graph->xAxis->setRange(key, 8, Qt::AlignRight);
-  ui->Graph->replot();
 
 
-}
-
-
-*/
 
 //INSERTAR
 void MainWindow::on_pushButton_clicked()

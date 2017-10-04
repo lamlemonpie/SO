@@ -57,7 +57,7 @@ private slots:
     void xAxisChanged(QCPRange range);
     void yAxisChanged(QCPRange range);
 
-    void setupRealtimeDataDemo(QCustomPlot *customPlot);
+
 
     void realtimeDataSlot();
 
