@@ -8,6 +8,7 @@
 #include <vector>
 #include <tuple>
 
+#include <QTimer>
 
 #include "qcustomplot.h"
 
@@ -29,6 +30,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void Posiciones();
+    void GenerarPuntos();
     void Graficar();
 
 private slots:
@@ -54,6 +57,9 @@ private slots:
     void xAxisChanged(QCPRange range);
     void yAxisChanged(QCPRange range);
 
+    void setupRealtimeDataDemo(QCustomPlot *customPlot);
+
+    void realtimeDataSlot();
 
 private:
     Ui::MainWindow *ui;
@@ -69,6 +75,19 @@ private:
 
     procesos Procesos;
     procesado Procesado;
+
+    //Mapa de Posiciones.
+    std::map < std::string, int > posiciones;
+
+    QTimer dataTimer;
+
+    int TimeElapsed = 0;
+    int pos = 0;
+
+    QVector<double> x1;
+    QVector<double> y1;
+    QVector<double> x2;
+    QVector<double> y2;
 
 };
 
