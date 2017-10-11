@@ -53,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+
+
 }
 
 MainWindow::~MainWindow()
@@ -71,10 +73,92 @@ void MainWindow::Posiciones()
 
 }
 
-void MainWindow::GenerarPuntos()
+void MainWindow::ImprimirVector(procesos vector)
 {
 
-    //x1[0] = 0; y1[0] = 0;
+    for(auto i: vector)
+    {
+
+        std::cout << "Nombre Proceso: " << std::get<0>(i) << std::endl;
+        //std::cout  << " Tiempo llegada: " << std::get<1>(i) << std::endl;
+        //std::cout << " Tiempo de Servicio: " << std::get<2>(i) << std::endl;
+
+    }
+
+}
+
+void MainWindow::ImprimirEncontrados(std::vector<procesos_it> &encontrados)
+{
+
+    std::cout<< "Los procesos encontrados: " << std::endl;
+    for(auto i: encontrados)
+    {
+
+
+        std::cout << " " <<std::get<0>(*i) << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+
+
+
+std::vector<procesos_it> MainWindow::buscarEnVector(std::string nombre, int valori, int valorf, procesos &vector)
+{
+
+    std::vector<procesos_it> nuevosCola;
+    std::cout << "Desde: " << valori << " hasta: " << valorf << std::endl;
+    std::cout << "Procesos que llegaron/encontrados:" << std::endl;
+
+    for(procesos_it it = vector.begin(); it != vector.end(); it++ )
+    {
+
+        if( std::get<1>(*it) >= valori  && std::get<1>(*it) <= valorf && std::get<0>(*it) != nombre )
+        {
+
+            std::cout << " " << std::get<0>(*it) << std::endl;
+            nuevosCola.push_back(it);
+
+        }
+
+    }
+
+
+    return nuevosCola;
+}
+
+void MainWindow::eliminarEnVector(procesos &vector, std::vector<procesos_it> &vectorelim)
+{
+
+    std::cout << "Procesos a eliminar: " << std::endl;
+
+    for(auto i:vectorelim)
+    {
+        std::cout <<" " << std::get<0>(*i);
+        vector.erase(i);
+    }
+
+    std::cout << std::endl;
+}
+
+
+void MainWindow::agregarCola(procesos &colaProcesos, std::vector<procesos_it> nuevosLlegados)
+{
+
+    std::cout << "Procesos a agregar a la cola: " << std::endl;
+
+    for(auto i: nuevosLlegados)
+    {
+        std::cout <<" " << std::get<0>(*i);
+        colaProcesos.push_back(*i);
+    }
+    std::cout << std::endl;
+}
+
+
+void MainWindow::fifo()
+{
+
     x1.push_back(0); y1.push_back(0);
 
 
@@ -87,6 +171,8 @@ void MainWindow::GenerarPuntos()
             double tmp = x1.last() + 1;
             double tmp2 = std::get<2>(i) + x1.last();
 
+            tInicio.insert( std::pair<std::string,int>(std::get<0>( i ) , tmp-1) );
+
             while( tmp <= tmp2 )
             {
 
@@ -94,6 +180,7 @@ void MainWindow::GenerarPuntos()
                 y1.push_back( posiciones.find(std::get<0>(i))->second  );
                 tmp++;
             }
+            tFinal.insert( std::pair<std::string,int>(std::get<0>( i ) , tmp2) );
 
         }
         else
@@ -113,6 +200,8 @@ void MainWindow::GenerarPuntos()
             tmp = x1.last() + 1;
             tmp2 = std::get<2>(i) + x1.last();
 
+            tInicio.insert( std::pair<std::string,int>(std::get<0>( i ) , tmp-1) );
+
             while(tmp <= tmp2)
             {
 
@@ -121,45 +210,127 @@ void MainWindow::GenerarPuntos()
 
                 tmp++;
             }
-
+            tFinal.insert( std::pair<std::string,int>(std::get<0>( i ) , tmp2) );
         }
 
     }
-    /*
-   for(unsigned long i = 1, j=0; j<Procesos.size(); ++i, ++j)
+
+
+    std::cout << "Inicio:" << std::endl;
+    for(auto i: tInicio )
     {
 
-       if( std::get<1>(Procesos[j]) <= x1.last()  )
-       {
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+    std::cout << "Final:" << std::endl;
+    for(auto i: tFinal)
+    {
 
-           //x1[i] = std::get<2>(Procesos[j]) + x1[i-1];
-           x1.push_back(std::get<2>(Procesos[j]) + x1[i-1]);
-           //y[i] = y[i-1] + 1;
-           //y1[i] = posiciones.find( std::get<0>( Procesos[j] ) )->second;
-           y1.push_back(posiciones.find( std::get<0>( Procesos[j] ) )->second);
-           std::cout << "PO: " << x1[i] << "-" << y1[i] << std::endl;
-       }
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
 
-       else
+}
+
+void MainWindow::primeroMasCorto()
+{
+
+    std::string nombre;
+
+    x1.push_back(0); y1.push_back(0);
+
+    ProcesosTemporal = Procesos;
+
+    colaProcesos.clear();
+
+    colaProcesos.push_back(ProcesosTemporal.front());
+    ProcesosTemporal.erase(ProcesosTemporal.begin());
+
+    std::cout << "Procesos: " << std::endl;
+    ImprimirVector(ProcesosTemporal);
+
+    std::cout << "---" << std::endl;
+
+
+    while( colaProcesos.size() != 0)
+    {
+
+        if( std::get<1>(colaProcesos.front()) <= x1.last() )
+        {
+             std::cout << "entra a graficar" << std::endl;
+            double tmp = x1.last() + 1;
+            double tmp2 = std::get<2>(colaProcesos.front()) + x1.last();
+            tInicio.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tmp-1) );
+            while( tmp <= tmp2 )
             {
 
-                //x1[i] = std::get<1>( Procesos[j] );
-                //y1[i] = 0;
-                x1.push_back(std::get<1>( Procesos[j] ));
-                y1.push_back(0);
-                std::cout << "PO1: " << x1[i] << "-" << y1[i] << std::endl;
-
-                //x1[i+1] = std::get<2>(Procesos[j]) + x1[i];
-                x1.push_back(std::get<2>(Procesos[j]) + x1[i]);
-                //y[i+1] = y[i-1] + 1;
-                //y1[i+1] = posiciones.find( std::get<0>( Procesos[j] ) )->second;
-                y1.push_back(posiciones.find( std::get<0>( Procesos[j] ) )->second);
-                std::cout << "PO2: " << x1[i+1] << "-" << y1[i+1] << std::endl;
-                ++i;
+                x1.push_back(tmp);
+                y1.push_back( posiciones.find(std::get<0>(colaProcesos.front()))->second  );
+                tmp++;
             }
 
+            tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tmp2));
+
+        }
+        else
+        {
+            std::cout << "entra a graficar" << std::endl;
+            double tmp = x1.last() + 1;
+            double tmp2 = std::get<1>(colaProcesos.front()) + x1.last();
+
+            while( tmp <= tmp2)
+            {
+
+                x1.push_back(tmp );
+                y1.push_back(0);
+                tmp++;
+            }
+
+            tmp = x1.last() + 1;
+            tmp2 = std::get<2>(colaProcesos.front()) + x1.last();
+            tInicio.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tmp-1) );
+            while(tmp <= tmp2)
+            {
+
+                x1.push_back(tmp);
+                y1.push_back(posiciones.find( std::get<0>( colaProcesos.front() ) )->second);
+
+                tmp++;
+            }
+            tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tmp2));
+
+        }
+
+        nombre = std::get<0>(colaProcesos.front());
+
+        std::vector<procesos_it> nuevosLlegados = buscarEnVector(nombre , tInicio.find( nombre )->second ,x1.last(),ProcesosTemporal);
+
+
+        colaProcesos.erase(colaProcesos.begin());
+
+        agregarCola( colaProcesos, nuevosLlegados );
+
+        std::sort(colaProcesos.begin(), colaProcesos.end(),[]( tupla a, tupla b){
+              return std::get<2>(a) <  std::get<2>(b);
+        });
+
+
     }
-    */
+
+
+    std::cout << "Inicio:" << std::endl;
+    for(auto i: tInicio )
+    {
+
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+    std::cout << "Final:" << std::endl;
+    for(auto i: tFinal)
+    {
+
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+
+
 }
 
 
@@ -448,7 +619,8 @@ void MainWindow::on_pushButton_2_clicked()
     ui->TRNP->setText(QString::number(RN_promedio));
 
     Posiciones();
-    GenerarPuntos();
+    //fifo();
+    primeroMasCorto();
     Graficar();
 
 }

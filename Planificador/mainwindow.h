@@ -14,6 +14,8 @@
 
 typedef std::tuple<std::string,int,int> tupla;
 typedef std::vector<tupla> procesos;
+typedef std::vector<tupla>::iterator procesos_it;
+
 
 typedef std::tuple<std::string,int,int,int,int,double> registro;
 typedef std::vector<registro> procesado;
@@ -31,7 +33,19 @@ public:
     ~MainWindow();
 
     void Posiciones();
-    void GenerarPuntos();
+
+    void ImprimirVector(procesos vector);
+    void ImprimirEncontrados(std::vector<procesos_it> &encontrados);
+
+    std::vector<procesos_it> buscarEnVector(std::string nombre, int valori, int valor, procesos &vector);
+    void eliminarEnVector(procesos &vector, std::vector<procesos_it> &vectorelim);
+    void agregarCola(procesos &colaProcesos, std::vector<procesos_it> nuevosLlegados);
+
+    void fifo();
+    void primeroMasCorto();
+
+
+
     void Graficar();
 
 private slots:
@@ -61,6 +75,9 @@ private slots:
 
     void realtimeDataSlot();
 
+
+
+
 private:
     Ui::MainWindow *ui;
 
@@ -74,7 +91,14 @@ private:
     double RN_promedio=0;
 
     procesos Procesos;
+
+    procesos ProcesosTemporal;
+    procesos colaProcesos;
+
     procesado Procesado;
+
+    std::map <std::string, int> tInicio;
+    std::map <std::string, int> tFinal;
 
     //Mapa de Posiciones.
     std::map < std::string, int > posiciones;
