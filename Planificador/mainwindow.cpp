@@ -208,7 +208,9 @@ void MainWindow::Graficar()
    }
 
   ui->Graph->xAxis->setTicker(textTickerTLL);
-
+  ui->Graph->xAxis2->setVisible(true);
+  ui->Graph->xAxis2->setTickLabels(true);
+  ui->Graph->xAxis->setSubTicks(true);
 
 
   ui->Graph->axisRect()->setupFullAxesBox(true);
@@ -252,8 +254,8 @@ void MainWindow::realtimeDataSlot()
 
     //std:: cout << key << " - "  << lastPointKey <<" = " << key - lastPointKey << std:: endl;
     //std:: cout << x1[pos] << "-" << y1[pos] << std::endl;
-    x2.push_back(x1[pos]);
-    y2.push_back(y1[pos]);
+    x2.push_back(x1[0]);
+    y2.push_back(y1[0]);
     x1.pop_front();
     y1.pop_front();
 
@@ -269,7 +271,7 @@ void MainWindow::realtimeDataSlot()
         dataTimer.stop();
     }
 
-    //pos++;
+    pos++;
 
   }
 
@@ -279,7 +281,8 @@ void MainWindow::realtimeDataSlot()
   //Añadiendo puntos a graficar.
   ui->Graph->graph(0)->setData(x2,y2);
   ui->Graph->graph(0)->setLineStyle(QCPGraph::lsStepRight);
-  //ui->Graph->xAxis->setRange(key, 8, Qt::AlignRight);
+  ui->Graph->xAxis->setRange(pos, 8, Qt::AlignRight);
+
   ui->Graph->replot();
 
 
