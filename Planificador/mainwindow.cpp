@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
     // configure scroll bars:
     // Since scroll bars only support integer values, we'll set a high default range of -500..500 and
     // divide scroll bar position values by 100 to provide a scroll range -5..5 in floating point
@@ -34,27 +33,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //x1.resize(10000); x2.resize(10000); y1.resize(10000); y2.resize(10000);
 
-    ui->tableWidget->setColumnCount(6);
+    ui->tableWidget->setColumnCount(8);
 
     QStringList L;
 
-    L << "Proceso" << "T. llegada" << "T. Servicio" << "T. finalización" <<"T. Retorno" << "T. R. Normalizado";
+    L << "Proceso" << "T. llegada" << "T. Servicio" << "T. finalización" <<"T. Retorno" << "T. R. Normalizado" << "T.Entrada"<<"T.Espera";
     ui->tableWidget->setHorizontalHeaderLabels(L);
 
-    ui->tableWidget->setColumnWidth(0,80);
-    ui->tableWidget->setColumnWidth(1,89);
-    ui->tableWidget->setColumnWidth(2,89);
-    ui->tableWidget->setColumnWidth(3,119);
-    ui->tableWidget->setColumnWidth(4,89);
-    ui->tableWidget->setColumnWidth(5,150);
+    ui->tableWidget->setColumnWidth(0,72);
+    ui->tableWidget->setColumnWidth(1,80);
+    ui->tableWidget->setColumnWidth(2,80);
+    ui->tableWidget->setColumnWidth(3,105);
+    ui->tableWidget->setColumnWidth(4,80);
+    ui->tableWidget->setColumnWidth(5,133);
+    ui->tableWidget->setColumnWidth(6,76);
+    ui->tableWidget->setColumnWidth(7,76);
 
     F=0;
     f=-1;
-
-
-
-
-
 }
 
 MainWindow::~MainWindow()
@@ -70,7 +66,6 @@ void MainWindow::Posiciones()
     {
         posiciones.insert( std::pair<std::string,int>(std::get<0>( Procesos[i] ) , i+1) );
     }
-
 }
 
 void MainWindow::ImprimirVector(procesos vector)
@@ -333,80 +328,71 @@ void MainWindow::primeroMasCorto()
 
 }
 
-
+//FUNCION KAT
 //Funcion para Graficar.
 void MainWindow::Graficar()
 {
-  // The following plot setup is mostly taken from the plot demos:
-  ui->Graph->addGraph();
-  ui->Graph->graph()->setPen(QPen(Qt::blue));
-  //ui->Graph->graph()->setBrush(QBrush(QColor(0, 0, 255, 20)));
+    // The following plot setup is mostly taken from the plot demos:
+    ui->Graph->addGraph();
+    ui->Graph->graph()->setPen(QPen(Qt::blue));
+    //ui->Graph->graph()->setBrush(QBrush(QColor(0, 0, 255, 20)));
 
-  ui->Graph->graph(0)->data()->clear();
-  ui->Graph->replot();
+    ui->Graph->graph(0)->data()->clear();
+    ui->Graph->replot();
 
-  //Vectores de puntos.
-  //QVector<double> x(10000), y(10000); x1, y1
-
+    //Vectores de puntos.
+    //QVector<double> x(10000), y(10000); x1, y1
 
     pos = 0;
 
+    //Iniciando vector de puntos.
 
-  //Iniciando vector de puntos.
+    //Nombre de los Procesos
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTick(0, "Nada");
 
-
-
-
- //Nombre de los Procesos
- QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
- textTicker->addTick(0, "Nada");
-
- for( auto i: posiciones )
- {
+    for( auto i: posiciones )
+    {
     textTicker->addTick( i.second, QString::fromStdString(i.first)  );
- }
+    }
 
-  ui->Graph->yAxis->setTicker(textTicker);
+    ui->Graph->yAxis->setTicker(textTicker);
 
+    //Tiempos de llegada
+    QSharedPointer<QCPAxisTickerText> textTickerTLL(new QCPAxisTickerText);
+    textTickerTLL->addTick(0, "Inicio");
 
-  //Tiempos de llegada
-  QSharedPointer<QCPAxisTickerText> textTickerTLL(new QCPAxisTickerText);
-  textTickerTLL->addTick(0, "Inicio");
-
-  for (unsigned long i = 1; i<=Procesos.size(); i++)
-   {
+    for (unsigned long i = 1; i<=Procesos.size(); i++)
+    {
       textTickerTLL->addTick(  std::get<1>( Procesos[i-1] ) , QString::fromStdString(std::to_string( std::get<1>( Procesos[i-1] )   ) + " \n Llega \n Proceso \n " + std::get<0>(Procesos[i-1])) );
-   }
+    }
 
-  ui->Graph->xAxis->setTicker(textTickerTLL);
-  ui->Graph->xAxis2->setVisible(true);
-  ui->Graph->xAxis2->setTickLabels(true);
-  ui->Graph->xAxis->setSubTicks(true);
-
-
-  ui->Graph->axisRect()->setupFullAxesBox(true);
-  ui->Graph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-
-  //Borrar anterior operacion
-  Procesado.clear();
-  R_promedio = 0;
-  RN_promedio = 0;
+    ui->Graph->xAxis->setTicker(textTickerTLL);
+    ui->Graph->xAxis2->setVisible(true);
+    ui->Graph->xAxis2->setTickLabels(true);
+    ui->Graph->xAxis->setSubTicks(true);
 
 
-  // make left and bottom axes transfer their ranges to right and top axes:
-  connect(ui->Graph->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->Graph->xAxis2, SLOT(setRange(QCPRange)));
-  connect(ui->Graph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->Graph->yAxis2, SLOT(setRange(QCPRange)));
+    ui->Graph->axisRect()->setupFullAxesBox(true);
+    ui->Graph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
-  // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
-  connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-  dataTimer.start(0); // Interval 0 means to refresh as fast as possible
+    //Borrar anterior operacion
+    Procesado.clear();
+    R_promedio = 0;
+    RN_promedio = 0;
 
+    // make left and bottom axes transfer their ranges to right and top axes:
+    connect(ui->Graph->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->Graph->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->Graph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->Graph->yAxis2, SLOT(setRange(QCPRange)));
 
-  //ui->Graph->graph(0)->setData(x1,y1);
-  //ui->Graph->graph(0)->setLineStyle(QCPGraph::lsStepRight);
+    // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
+    connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
+    dataTimer.start(0); // Interval 0 means to refresh as fast as possible
 
-  //ui->Graph->replot();
+    //ui->Graph->graph(0)->setData(x1,y1);
+    //ui->Graph->graph(0)->setLineStyle(QCPGraph::lsStepRight);
 
+    //ui->Graph->replot();
 
 }
 
@@ -459,9 +445,7 @@ void MainWindow::realtimeDataSlot()
 
 }
 
-
-
-
+// FUNCION KAT
 //INSERTAR
 void MainWindow::on_pushButton_clicked()
 {
@@ -485,6 +469,7 @@ void MainWindow::on_pushButton_clicked()
     ui->lineEdit_3->clear();
 }
 
+// FUNCION KAT
 void MainWindow::mostrar(){
   for (auto i: Procesos){
     std::cout<<"Proceso:  "<<std::get<0>(i)<<std::endl;
@@ -492,8 +477,17 @@ void MainWindow::mostrar(){
   }
 }
 
+void imprimir(procesos pro){
+  for (auto i: pro){
+    std::cout<<"Proceso:  "<<std::get<0>(i)<<std::endl;
+      std::cout<<"    Tiempo de llegada: "<< std::get<1>(i)<<"  Tiempo de servicio: "<< std::get<2>(i)<<std::endl;
+  }
+}
+
+// FUNCION KAT
 void MainWindow::mostrarNuevo(){
-  for (auto i: Procesado){
+  for (auto i: Procesado)
+  {
     std::cout<<"Proceso:  "<<std::get<0>(i)<<std::endl;
       std::cout<<"    Tiempo de llegada: "<< std::get<1>(i)<<"  Tiempo de servicio: "<< std::get<2>(i)<<
                  "  Tiempo finalizado: "<<std::get<3>(i)<<"  Tiempo de retorno: "<< std::get<4>(i)<<
@@ -501,7 +495,21 @@ void MainWindow::mostrarNuevo(){
   }
 }
 
-void MainWindow::procesando(){
+// FUNCION KAT
+void MainWindow::mostrarNuevo2(){
+  for (auto i: SPN)
+  {
+    std::cout<<"Proceso:  "<<std::get<0>(i)<<std::endl;
+      std::cout<<"    Tiempo de llegada: "<< std::get<1>(i)<<"  Tiempo de servicio: "<< std::get<2>(i)<<
+                 "  Tiempo entrada: "<<std::get<3>(i)<<"  Tiempo de espera: "<< std::get<4>(i)<<
+                 "  Tiempo finalizacion: "<<std::get<5>(i)<<"  Tiempo retorno: "<<std::get<6>(i)<<
+                 "  Tiempo normalizado: "<<std::get<6>(i)<<std::endl;
+  }
+}
+
+// KAT
+//FUNCION FIFO
+void MainWindow::FIFO(){
     int fin = 0;
     int retorno = 0;
     int n = Procesos.size();
@@ -535,6 +543,38 @@ void MainWindow::procesando(){
     RN_promedio = RN_promedio *1.0 / n;
 }
 
+//KAT
+// FUNCION PRIMERO MAS CORTO
+void MainWindow::FuncionSPN()
+{
+    int fin = 0;
+    int retorno = 0;
+    int TEntrada = 0;
+    int TEspera = 0;
+    int n = Procesos.size();
+    double normalizado = 0;
+
+    for (auto i: Procesos){
+        std::string nombre= std::get<0>(i);
+        TEntrada = (tInicio.find(nombre))->second;
+        TEspera = TEntrada - std::get<1>(i);
+        fin = TEntrada + std::get<2>(i);
+        retorno = fin - std::get<1>(i);
+        normalizado = retorno*1.0 /std::get<2>(i);
+
+        R_promedio = R_promedio + retorno;
+        RN_promedio = RN_promedio + normalizado;
+
+        otro nuevo = otro(std::get<0>(i),std::get<1>(i),std::get<2>(i),TEntrada,TEspera,fin,retorno, normalizado);
+        SPN.push_back(nuevo);
+    }
+
+    R_promedio = R_promedio *1.0 / n;
+    RN_promedio = RN_promedio *1.0 / n;
+}
+
+// KAT
+//Boton borrar todo
 void MainWindow::on_pushButton_3_clicked()
 {
     Procesos.clear();
@@ -551,7 +591,8 @@ void MainWindow::on_pushButton_3_clicked()
     //close();
 }
 
-//Al hacer click
+// KAT
+//Al hacer click, se selecciona
 void MainWindow::on_tableWidget_itemClicked(QTableWidgetItem *item)
 {
     f = item->row();
@@ -565,6 +606,7 @@ void MainWindow::on_tableWidget_itemClicked(QTableWidgetItem *item)
     ui->lineEdit_2->setText(servicio->text());
 }
 
+// KAT
 //Editar campo
 void MainWindow::on_pushButton_4_clicked()
 {
@@ -581,48 +623,91 @@ void MainWindow::on_pushButton_4_clicked()
     Procesos.at(f) = nuevo;
 }
 
+//BOTON GRAFICAR
 void MainWindow::on_pushButton_2_clicked()
 {
+    int index = ui->comboBox->currentIndex();
+
+    Posiciones();
+
     mostrar();
-    procesando();
-    mostrarNuevo();
+    if(index == 0)
+    {
+        fifo();
+        FIFO();
+        mostrarNuevo();
+        //CREANDO TABLA FINAL
+        ui->tableWidget->setRowCount(0);   //resetea tabla
+        int fin = 0;
+        int retorno = 0;
+        double normalizado = 0;
+        F=0;
+
+        for(auto i:Procesado)
+        {
+            proc = std::get<0>(i);
+            lleg = std::get<1>(i);
+            serv = std::get<2>(i);
+            fin = std::get<3>(i);
+            retorno = std::get<4>(i);
+            normalizado = std::get<5>(i);
+
+            ui->tableWidget->insertRow(F);
+            ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
+            ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
+            ui->tableWidget->setItem(F,2, new QTableWidgetItem(QString::number(serv)));
+            ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
+            ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
+            ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
+            F++;
+        }
+    }
+    else if(index == 1)
+    {
+        primeroMasCorto();
+        FuncionSPN();
+        mostrarNuevo2();
+
+        //CREANDO TABLA FINAL
+        ui->tableWidget->setRowCount(0);   //resetea tabla
+        int fin = 0;
+        int retorno = 0;
+        double normalizado = 0;
+        F=0;
+
+        for(auto i:SPN)
+        {
+            proc = std::get<0>(i);
+            lleg = std::get<1>(i);
+            serv = std::get<2>(i);
+            entr = std::get<3>(i);
+            esp = std::get<4>(i);
+            fin = std::get<5>(i);
+            retorno = std::get<6>(i);
+            normalizado = std::get<7>(i);
+
+            ui->tableWidget->insertRow(F);
+            ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
+            ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
+            ui->tableWidget->setItem(F,2, new QTableWidgetItem(QString::number(serv)));
+            ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
+            ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
+            ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
+            ui->tableWidget->setItem(F,6, new QTableWidgetItem(QString::number(entr)));
+            ui->tableWidget->setItem(F,7, new QTableWidgetItem(QString::number(esp)));
+            F++;
+        }
+    }
+    else
+        std::cout<<"NO hay :v"<<std::endl;
+
     std::cout<< "Tiempor de retorno promedio: "<<R_promedio<<std::endl;
     std::cout<< "Tiempo de retorno normalizado promedio: "<<RN_promedio<<std::endl;
-
-    //CREANDO TABLA FINAL
-    ui->tableWidget->setRowCount(0);   //resetea tabla
-    int fin = 0;
-    int retorno = 0;
-    double normalizado = 0;
-    F=0;
-
-    for(auto i:Procesado)
-    {
-        proc = std::get<0>(i);
-        lleg = std::get<1>(i);
-        serv = std::get<2>(i);
-        fin = std::get<3>(i);
-        retorno = std::get<4>(i);
-        normalizado = std::get<5>(i);
-
-        ui->tableWidget->insertRow(F);
-        ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
-        ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
-        ui->tableWidget->setItem(F,2, new QTableWidgetItem(QString::number(serv)));
-        ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
-        ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
-        ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
-        F++;
-    }
 
     ui->TRP->setText(QString::number(R_promedio));
     ui->TRNP->setText(QString::number(RN_promedio));
 
-    Posiciones();
-    //fifo();
-    primeroMasCorto();
     Graficar();
-
 }
 
 void MainWindow::horzScrollBarChanged(int value)
@@ -655,3 +740,13 @@ void MainWindow::yAxisChanged(QCPRange range)
   ui->verticalScrollBar->setPageStep(qRound(range.size()*100.0)); // adjust size of scroll bar slider
 }
 
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    if(index==0){
+        std::cout<<"FIFO seleccionada"<<std::endl;
+    }
+    else if(index==1){
+        std::cout<<"Mas corto primero seleccionado"<<std::endl;
+    }
+}

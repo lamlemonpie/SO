@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <list>
 
 #include <QTimer>
 
@@ -19,6 +20,8 @@ typedef std::vector<tupla>::iterator procesos_it;
 
 typedef std::tuple<std::string,int,int,int,int,double> registro;
 typedef std::vector<registro> procesado;
+typedef std::tuple<std::string , int,int,int,int,int,int,double> otro;
+//typedef std::vector<otro> listo2;
 
 namespace Ui {
 class MainWindow;
@@ -63,7 +66,11 @@ private slots:
 
     void mostrarNuevo();
 
-    void procesando();
+    void mostrarNuevo2();
+
+    void FIFO();
+
+    void FuncionSPN();
 
     //Moverse dentro del Grafico
     void horzScrollBarChanged(int value);
@@ -75,8 +82,7 @@ private slots:
 
     void realtimeDataSlot();
 
-
-
+    void on_comboBox_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
@@ -86,6 +92,8 @@ private:
     std::string proc;
     int lleg;
     int serv;
+    int entr;
+    int esp;
 
     double R_promedio=0;
     double RN_promedio=0;
@@ -96,6 +104,7 @@ private:
     procesos colaProcesos;
 
     procesado Procesado;
+    std::vector<otro> SPN;
 
     std::map <std::string, int> tInicio;
     std::map <std::string, int> tFinal;
