@@ -44,8 +44,12 @@ public:
     void eliminarEnVector(procesos &vector, std::vector<procesos_it> &vectorelim);
     void agregarCola(procesos &colaProcesos, std::vector<procesos_it> nuevosLlegados);
 
+    bool buscarEnTiempo(int tiempo , tupla &buscando , procesos &Procs);
+    tupla buscarPorNombre(std::string nombre);
+
     void fifo();
     void primeroMasCorto();
+    void sjf_Expulsion();
 
 
 

@@ -252,6 +252,11 @@
       <string>Mas corto</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>SRT</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

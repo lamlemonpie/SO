@@ -150,6 +150,39 @@ void MainWindow::agregarCola(procesos &colaProcesos, std::vector<procesos_it> nu
     std::cout << std::endl;
 }
 
+bool MainWindow::buscarEnTiempo(int tiempo, tupla &buscando, procesos &Procs)
+{
+
+    for (int i = 0; i<Procs.size(); i++)
+    {
+        if(std::get<1>(Procs[i]) == tiempo )
+        {
+            buscando = Procs[i];
+            std:: cout << "Proceso encontrado en tiempo "<< tiempo << std::endl;
+            Procs.erase(Procs.begin() + i);
+            return true;
+        }
+    }
+    std::cout << "Proceso no encontrado en tiempo " << tiempo << std::endl;
+    return false;
+}
+
+tupla MainWindow::buscarPorNombre(std::string nombre)
+{
+    tupla encontrado;
+    for(auto i: Procesos)
+    {
+
+        if( std::get<0>(i) == nombre)
+        {
+            encontrado = i;
+        }
+
+    }
+
+    return encontrado;
+}
+
 
 void MainWindow::fifo()
 {
@@ -324,6 +357,136 @@ void MainWindow::primeroMasCorto()
 
         std::cout << i.first << "-" << i.second << std::endl;
     }
+
+
+}
+
+void MainWindow::sjf_Expulsion()
+{
+
+
+    x1.push_back(0); y1.push_back(0);
+
+    ProcesosTemporal = Procesos;
+
+    colaProcesos.clear();
+
+
+
+    std::cout << "Procesos: " << std::endl;
+    ImprimirVector(ProcesosTemporal);
+
+    std::cout << "---" << std::endl;
+
+    int tiempo=0;
+    int cantProc = Procesos.size();
+
+    std::cout << "Entrando SRT" << std::endl;
+
+    while( cantProc !=0 )
+    {
+
+        tupla buscando;
+        std::cout <<"Tiempo: " << tiempo << std::endl;
+
+        if( buscarEnTiempo(tiempo,buscando, ProcesosTemporal) )
+        {
+
+
+            if(colaProcesos.size() == 0)
+            {
+                colaProcesos.push_back(buscando);
+            }
+            else
+            {
+
+                if(std::get<2>(buscando) < std::get<2>(colaProcesos.front()))
+                {
+
+                    colaProcesos.push_back(colaProcesos.front());
+                    colaProcesos.front() = buscando;
+
+                    std::sort(colaProcesos.begin(), colaProcesos.end(),[]( tupla a, tupla b){
+                          return std::get<2>(a) <  std::get<2>(b);
+                    });
+
+
+                }
+                else
+                {
+                    colaProcesos.push_back(buscando);
+
+                    std::sort(colaProcesos.begin(), colaProcesos.end(),[]( tupla a, tupla b){
+                          return std::get<2>(a) <  std::get<2>(b);
+                    });
+
+                }
+            }
+
+
+
+        }
+        else
+        {
+
+            if( colaProcesos.size() == 0 )
+            {
+
+                x1.push_back(x1.last());
+                y1.push_back(0);
+                std::cout<< "["<<x1.last() << "," << y1.last() << "]" << std::endl;
+                tiempo++;
+
+            }
+            else
+            {
+
+                if( std::get<2>(colaProcesos.front()) == 0)
+                {
+
+
+                    tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo));
+                    colaProcesos.erase(colaProcesos.begin());
+                    cantProc--;
+
+                }
+                else
+                {
+                    x1.push_back(x1.last()+1);
+                    y1.push_back(posiciones.find( std::get<0>( colaProcesos.front() ) )->second);
+                    std::cout<< "["<<x1.last() << "," << y1.last() << "]" << std::endl;
+
+                    //Corregir verificación pesada
+                    if(std::get<2>(colaProcesos.front()) == std::get<2>( buscarPorNombre( std::get<0>(colaProcesos.front()) )  ))
+                        tInicio.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo) );
+
+                    std::get<2>(colaProcesos.front())-= 1;
+                    tiempo++;
+
+                }
+
+
+            }
+
+        }
+
+
+    }
+
+
+    std::cout << "Inicio:" << std::endl;
+    for(auto i: tInicio )
+    {
+
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+    std::cout << "Final:" << std::endl;
+    for(auto i: tFinal)
+    {
+
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+
 
 
 }
@@ -723,7 +886,7 @@ void MainWindow::on_pushButton_2_clicked()
     //SRT
     else if( index == 2)
     {
-        FuncionSRT();
+        sjf_Expulsion();
     }
 
     else
@@ -776,5 +939,8 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
     }
     else if(index==1){
         std::cout<<"Mas corto primero seleccionado"<<std::endl;
+    }
+    else if(index==2){
+        std::cout << "Shortest Remaining Time seleccionado"<<std::endl;
     }
 }
