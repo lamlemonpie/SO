@@ -111,6 +111,7 @@ private:
 
     procesado Procesado;
     std::vector<otro> SPN;
+    std::vector<otro> SRT;
 
     std::map <std::string, int> tInicio;
     std::map <std::string, int> tFinal;

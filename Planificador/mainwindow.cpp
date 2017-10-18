@@ -261,11 +261,8 @@ void MainWindow::fifo()
 
 void MainWindow::primeroMasCorto()
 {
-
     std::string nombre;
-
     x1.push_back(0); y1.push_back(0);
-
     ProcesosTemporal = Procesos;
 
     colaProcesos.clear();
@@ -658,9 +655,9 @@ void MainWindow::mostrarNuevo(){
   }
 }
 
-// FUNCION KAT   //IMPRIMIR SPN
+// FUNCION KAT   //IMPRIMIR SPN o SRT
 void MainWindow::mostrarNuevo2(){
-  for (auto i: SPN)
+  for (auto i: SRT)
   {
     std::cout<<"Proceso:  "<<std::get<0>(i)<<std::endl;
       std::cout<<"    Tiempo de llegada: "<< std::get<1>(i)<<"  Tiempo de servicio: "<< std::get<2>(i)<<
@@ -748,9 +745,22 @@ void MainWindow::FuncionSRT()
     int n = Procesos.size();
     double normalizado = 0;
 
+    std::cout<<"ENTRO!!\n";
+
     for ( auto i:Procesos)
     {
+        std::string nombre= std::get<0>(i);
+        TEntrada = (tInicio.find(nombre))->second;
+        fin = (tFinal.find(nombre))->second;
+        retorno = fin - std::get<1>(i);
+        TEspera = retorno - std::get<2>(i);
+        normalizado = retorno*1.0 /std::get<2>(i);
 
+        R_promedio = R_promedio + retorno;
+        RN_promedio = RN_promedio + normalizado;
+
+        otro nuevo = otro(std::get<0>(i),std::get<1>(i),std::get<2>(i),TEntrada,TEspera,fin,retorno, normalizado);
+        SRT.push_back(nuevo);
     }
 
     R_promedio = R_promedio * 1.0 / n;
@@ -886,7 +896,43 @@ void MainWindow::on_pushButton_2_clicked()
     //SRT
     else if( index == 2)
     {
+        //Grafica
         sjf_Expulsion();
+        // Tabla
+        FuncionSRT();
+        //Muestra en consola
+        mostrarNuevo2();
+
+        //CREANDO TABLA FINAL
+        ui->tableWidget->setRowCount(0);   //resetea tabla
+        int fin = 0;
+        int retorno = 0;
+        double normalizado = 0;
+        F=0;
+
+        for(auto i:SRT)
+        {
+            proc = std::get<0>(i);
+            lleg = std::get<1>(i);
+            serv = std::get<2>(i);
+            entr = std::get<3>(i);
+            esp = std::get<4>(i);
+            fin = std::get<5>(i);
+            retorno = std::get<6>(i);
+            normalizado = std::get<7>(i);
+
+            ui->tableWidget->insertRow(F);
+            ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
+            ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
+            ui->tableWidget->setItem(F,2, new QTableWidgetItem(QString::number(serv)));
+            ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
+            ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
+            ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
+            ui->tableWidget->setItem(F,6, new QTableWidgetItem(QString::number(entr)));
+            ui->tableWidget->setItem(F,7, new QTableWidgetItem(QString::number(esp)));
+            F++;
+        }
+
     }
 
     else
