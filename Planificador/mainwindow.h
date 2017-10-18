@@ -72,6 +72,8 @@ private slots:
 
     void FuncionSPN();
 
+    void FuncionSRT();
+
     //Moverse dentro del Grafico
     void horzScrollBarChanged(int value);
     void vertScrollBarChanged(int value);

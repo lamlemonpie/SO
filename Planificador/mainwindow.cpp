@@ -484,7 +484,7 @@ void imprimir(procesos pro){
   }
 }
 
-// FUNCION KAT
+// FUNCION KAT  //IMPRIMIR FIFO
 void MainWindow::mostrarNuevo(){
   for (auto i: Procesado)
   {
@@ -495,7 +495,7 @@ void MainWindow::mostrarNuevo(){
   }
 }
 
-// FUNCION KAT
+// FUNCION KAT   //IMPRIMIR SPN
 void MainWindow::mostrarNuevo2(){
   for (auto i: SPN)
   {
@@ -509,7 +509,8 @@ void MainWindow::mostrarNuevo2(){
 
 // KAT
 //FUNCION FIFO
-void MainWindow::FIFO(){
+void MainWindow::FIFO()
+{
     int fin = 0;
     int retorno = 0;
     int n = Procesos.size();
@@ -571,6 +572,26 @@ void MainWindow::FuncionSPN()
 
     R_promedio = R_promedio *1.0 / n;
     RN_promedio = RN_promedio *1.0 / n;
+}
+
+//KAT
+//FUNCION SRT
+void MainWindow::FuncionSRT()
+{
+    int fin = 0;
+    int retorno = 0;
+    int TEntrada = 0;
+    int TEspera = 0;
+    int n = Procesos.size();
+    double normalizado = 0;
+
+    for ( auto i:Procesos)
+    {
+
+    }
+
+    R_promedio = R_promedio * 1.0 / n;
+    RN_promedio = RN_promedio * 1.0 / n;
 }
 
 // KAT
@@ -662,6 +683,7 @@ void MainWindow::on_pushButton_2_clicked()
             F++;
         }
     }
+    //SPN
     else if(index == 1)
     {
         primeroMasCorto();
@@ -698,6 +720,12 @@ void MainWindow::on_pushButton_2_clicked()
             F++;
         }
     }
+    //SRT
+    else if( index == 2)
+    {
+        FuncionSRT();
+    }
+
     else
         std::cout<<"NO hay :v"<<std::endl;
 
