@@ -429,7 +429,7 @@ void MainWindow::sjf_Expulsion()
             if( colaProcesos.size() == 0 )
             {
 
-                x1.push_back(x1.last());
+                x1.push_back(x1.last()+1);
                 y1.push_back(0);
                 std::cout<< "["<<x1.last() << "," << y1.last() << "]" << std::endl;
                 tiempo++;
