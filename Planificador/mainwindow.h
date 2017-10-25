@@ -50,7 +50,7 @@ public:
     void fifo();
     void primeroMasCorto();
     void sjf_Expulsion();
-
+    void round_Robin();
 
 
     void Graficar();

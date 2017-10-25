@@ -155,7 +155,7 @@ void MainWindow::agregarCola(procesos &colaProcesos, std::vector<procesos_it> nu
 bool MainWindow::buscarEnTiempo(int tiempo, tupla &buscando, procesos &Procs)
 {
 
-    for (int i = 0; i<Procs.size(); i++)
+    for (unsigned long i = 0; i<Procs.size(); i++)
     {
         if(std::get<1>(Procs[i]) == tiempo )
         {
@@ -489,6 +489,86 @@ void MainWindow::sjf_Expulsion()
 
 
 }
+
+void MainWindow::round_Robin()
+{
+
+    x1.push_back(0); y1.push_back(0);
+
+    ProcesosTemporal = Procesos;
+
+    colaProcesos.clear();
+
+
+
+    std::cout << "Procesos: " << std::endl;
+    ImprimirVector(ProcesosTemporal);
+
+    std::cout << "---" << std::endl;
+
+    int tiempo=0;
+    int quantum2 = quantum;
+
+    int cantProc = Procesos.size();
+
+    std::cout << "Entrando Round Robin" << std::endl;
+
+
+    while( colaProcesos.size() != 0 )
+    {
+
+        if( get<2>(colaProcesos.front()) == 0 )
+        {
+
+            tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo));
+            colaProcesos.erase( colaProcesos.begin() );
+            cantProc--;
+
+        }
+        else
+        {
+
+            if( quantum2 == 0)
+            {
+
+                colaProcesos.push_back(colaProcesos.front());
+                colaProcesos.erase(colaProcesos.begin());
+                quantum2 = quantum;
+
+            }
+            else
+            {
+                tupla buscando;
+                if( buscarEnTiempo(tiempo,buscando,ProcesosTemporal) )
+                {
+
+                    colaProcesos.push_back(buscando);
+
+                }
+                else
+                {
+
+                    //Corregir verificación pesada
+                    if(std::get<2>(colaProcesos.front()) == std::get<2>( buscarPorNombre( std::get<0>(colaProcesos.front()) )  ))
+                        tInicio.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo) );
+
+                    x1.push_back(x1.last()+1);
+                    y1.push_back(posiciones.find( std::get<0>( colaProcesos.front() ) )->second);
+                    get<2>(colaProcesos.front())-= 1;
+                    tiempo++;
+                    quantum2--;
+                }
+            }
+
+        }
+
+
+    }
+
+}
+
+
+
 
 //FUNCION KAT
 //Funcion para Graficar.
