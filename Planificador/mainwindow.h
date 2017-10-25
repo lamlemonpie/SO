@@ -103,6 +103,8 @@ private:
     int entr;
     int esp;
 
+    double quantum;
+
     double R_promedio=0;
     double RN_promedio=0;
 

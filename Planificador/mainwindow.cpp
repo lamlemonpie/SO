@@ -700,6 +700,9 @@ void MainWindow::on_pushButton_clicked()
     proc = ui->lineEdit_3->text().toStdString();
     lleg = ui->lineEdit->text().toInt();
     serv = ui->lineEdit_2->text().toInt();
+    // OBTIENE QUANTUM
+    quantum = ui->lineEdit_4->text().toInt();
+    cout<<"Quantum: " << quantum<<endl;
 
     //Insertar en vector de procesos
     tupla nuevo =  tupla(proc,lleg,serv);
@@ -708,6 +711,7 @@ void MainWindow::on_pushButton_clicked()
     ui->lineEdit->clear();
     ui->lineEdit_2->clear();
     ui->lineEdit_3->clear();
+    ui->lineEdit_4->clear();
 }
 
 // FUNCION KAT
@@ -1025,9 +1029,11 @@ void MainWindow::on_pushButton_2_clicked()
     else if(index == 3)
     {
         // Tabla
-        FuncionSRT();
+        FuncionRoundRobin();
         //Muestra en consola
-        mostrarNuevo2();
+        //mostrarNuevo2();
+        //
+        round_Robin();
         cout<<"FUNCION ROUND ROBIN"<<endl;
     }
 
