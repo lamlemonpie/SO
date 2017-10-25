@@ -514,15 +514,26 @@ void MainWindow::round_Robin()
     std::cout << "Entrando Round Robin" << std::endl;
 
 
-    while( colaProcesos.size() != 0 )
+    while( cantProc !=0 )
     {
 
-        if( get<2>(colaProcesos.front()) == 0 )
+        tupla buscando;
+        if( buscarEnTiempo(tiempo,buscando,ProcesosTemporal) )
         {
 
-            tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo));
-            colaProcesos.erase( colaProcesos.begin() );
-            cantProc--;
+            colaProcesos.push_back(buscando);
+            //cantProc++;
+
+        }
+
+
+        if( colaProcesos.size() == 0 )
+        {
+
+            x1.push_back(x1.last()+1);
+            y1.push_back(0);
+            tiempo++;
+
 
         }
         else
@@ -538,12 +549,15 @@ void MainWindow::round_Robin()
             }
             else
             {
-                tupla buscando;
-                if( buscarEnTiempo(tiempo,buscando,ProcesosTemporal) )
+
+
+                if(get<2>(colaProcesos.front()) == 0)
                 {
 
-                    colaProcesos.push_back(buscando);
-
+                    tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo));
+                    colaProcesos.erase( colaProcesos.begin() );
+                    cantProc--;
+                    quantum2= quantum;
                 }
                 else
                 {
@@ -557,7 +571,11 @@ void MainWindow::round_Robin()
                     get<2>(colaProcesos.front())-= 1;
                     tiempo++;
                     quantum2--;
+
                 }
+
+
+
             }
 
         }
