@@ -3,6 +3,8 @@
 
 #include <QTimer>
 
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -556,7 +558,6 @@ void MainWindow::Graficar()
 
 }
 
-
 void MainWindow::realtimeDataSlot()
 {
   static QTime time(QTime::currentTime());
@@ -767,6 +768,12 @@ void MainWindow::FuncionSRT()
     RN_promedio = RN_promedio * 1.0 / n;
 }
 
+//KAT
+//FUNCION ROUND ROBIN
+void MainWindow::FuncionRoundRobin()
+{
+}
+
 // KAT
 //Boton borrar todo
 void MainWindow::on_pushButton_3_clicked()
@@ -935,6 +942,15 @@ void MainWindow::on_pushButton_2_clicked()
 
     }
 
+    else if(index == 3)
+    {
+        // Tabla
+        FuncionSRT();
+        //Muestra en consola
+        mostrarNuevo2();
+        cout<<"FUNCION ROUND ROBIN"<<endl;
+    }
+
     else
         std::cout<<"NO hay :v"<<std::endl;
 
@@ -988,5 +1004,8 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
     }
     else if(index==2){
         std::cout << "Shortest Remaining Time seleccionado"<<std::endl;
+    }
+    else if(index==3){
+        cout<<"ROUND ROBIN seleccionado"<<endl;
     }
 }
