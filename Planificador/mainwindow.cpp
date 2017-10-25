@@ -532,6 +532,7 @@ void MainWindow::round_Robin()
 
             x1.push_back(x1.last()+1);
             y1.push_back(0);
+            cout << "[" << x1.last() << "," << y1.last() << "]" << endl;
             tiempo++;
 
 
@@ -539,25 +540,28 @@ void MainWindow::round_Robin()
         else
         {
 
-            if( quantum2 == 0)
+
+            if(get<2>(colaProcesos.front()) == 0)
             {
 
-                colaProcesos.push_back(colaProcesos.front());
-                colaProcesos.erase(colaProcesos.begin());
-                quantum2 = quantum;
+                tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo));
+                cout << "El proceso " << get<0>( colaProcesos.front() ) << " ha terminado en el tiempo " << tiempo << endl;
+                colaProcesos.erase( colaProcesos.begin() );
+
+                cantProc--;
+                quantum2= quantum;
 
             }
             else
             {
 
-
-                if(get<2>(colaProcesos.front()) == 0)
+                if( quantum2 == 0)
                 {
 
-                    tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tiempo));
-                    colaProcesos.erase( colaProcesos.begin() );
-                    cantProc--;
-                    quantum2= quantum;
+                    colaProcesos.push_back(colaProcesos.front());
+                    colaProcesos.erase(colaProcesos.begin());
+                    quantum2 = quantum;
+
                 }
                 else
                 {
@@ -568,6 +572,7 @@ void MainWindow::round_Robin()
 
                     x1.push_back(x1.last()+1);
                     y1.push_back(posiciones.find( std::get<0>( colaProcesos.front() ) )->second);
+                    cout << "Proceso: "<< get<0>( colaProcesos.front() ) << "[" << x1.last() << "," << y1.last() << "]" << endl;
                     get<2>(colaProcesos.front())-= 1;
                     tiempo++;
                     quantum2--;
@@ -582,6 +587,22 @@ void MainWindow::round_Robin()
 
 
     }
+
+
+    std::cout << "Inicio:" << std::endl;
+    for(auto i: tInicio )
+    {
+
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+    std::cout << "Final:" << std::endl;
+    for(auto i: tFinal)
+    {
+
+        std::cout << i.first << "-" << i.second << std::endl;
+    }
+
+
 
 }
 
