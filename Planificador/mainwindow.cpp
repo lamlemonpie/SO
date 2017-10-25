@@ -592,6 +592,7 @@ void MainWindow::round_Robin()
 //Funcion para Graficar.
 void MainWindow::Graficar()
 {
+
     // The following plot setup is mostly taken from the plot demos:
     ui->Graph->addGraph();
     ui->Graph->graph()->setPen(QPen(Qt::blue));
@@ -718,6 +719,7 @@ void MainWindow::on_pushButton_clicked()
     proc = ui->lineEdit_3->text().toStdString();
     lleg = ui->lineEdit->text().toInt();
     serv = ui->lineEdit_2->text().toInt();
+
     // OBTIENE QUANTUM
     quantum = ui->lineEdit_4->text().toInt();
     cout<<"Quantum: " << quantum<<endl;
@@ -729,7 +731,7 @@ void MainWindow::on_pushButton_clicked()
     ui->lineEdit->clear();
     ui->lineEdit_2->clear();
     ui->lineEdit_3->clear();
-    ui->lineEdit_4->clear();
+    //ui->lineEdit_4->clear();
 }
 
 // FUNCION KAT
@@ -874,6 +876,33 @@ void MainWindow::FuncionSRT()
 //FUNCION ROUND ROBIN
 void MainWindow::FuncionRoundRobin()
 {
+    int fin = 0;
+    int retorno = 0;
+    int TEntrada = 0;
+    int TEspera = 0;
+    int n = Procesos.size();
+    double normalizado = 0;
+
+    for ( auto i:Procesos)
+    {
+        std::string nombre= std::get<0>(i);
+        TEntrada = (tInicio.find(nombre))->second;
+        cout<<"TEntrada: "<<TEntrada<<endl;
+        fin = (tFinal.find(nombre))->second;
+        cout<<"fin: "<<fin<<endl;
+        retorno = fin - std::get<1>(i);
+        TEspera = retorno - std::get<2>(i);
+        normalizado = retorno*1.0 /std::get<2>(i);
+
+        R_promedio = R_promedio + retorno;
+        RN_promedio = RN_promedio + normalizado;
+
+        otro nuevo = otro(std::get<0>(i),std::get<1>(i),std::get<2>(i),TEntrada,TEspera,fin,retorno, normalizado);
+        RR.push_back(nuevo);
+    }
+
+    R_promedio = R_promedio * 1.0 / n;
+    RN_promedio = RN_promedio * 1.0 / n;
 }
 
 // KAT
@@ -1046,13 +1075,41 @@ void MainWindow::on_pushButton_2_clicked()
 
     else if(index == 3)
     {
+        // Graficar
+        round_Robin();
         // Tabla
         FuncionRoundRobin();
-        //Muestra en consola
         //mostrarNuevo2();
-        //
-        round_Robin();
         cout<<"FUNCION ROUND ROBIN"<<endl;
+
+        ui->tableWidget->setRowCount(0);   //resetea tabla
+        int fin = 0;
+        int retorno = 0;
+        double normalizado = 0;
+        F=0;
+
+        for(auto i:RR)
+        {
+            proc = std::get<0>(i);
+            lleg = std::get<1>(i);
+            serv = std::get<2>(i);
+            entr = std::get<3>(i);
+            esp = std::get<4>(i);
+            fin = std::get<5>(i);
+            retorno = std::get<6>(i);
+            normalizado = std::get<7>(i);
+
+            ui->tableWidget->insertRow(F);
+            ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
+            ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
+            ui->tableWidget->setItem(F,2, new QTableWidgetItem(QString::number(serv)));
+            ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
+            ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
+            ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
+            ui->tableWidget->setItem(F,6, new QTableWidgetItem(QString::number(entr)));
+            ui->tableWidget->setItem(F,7, new QTableWidgetItem(QString::number(esp)));
+            F++;
+        }
     }
 
     else
