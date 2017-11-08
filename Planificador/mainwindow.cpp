@@ -787,6 +787,12 @@ void MainWindow::Graficar()
       textTickerTLL->addTick(  std::get<1>( Procesos[i-1] ) , QString::fromStdString(std::to_string( std::get<1>( Procesos[i-1] )   ) + " \n Llega \n Proceso \n " + std::get<0>(Procesos[i-1])) );
     }
 
+    for (unsigned long i = 1; i<=ProcesosP.size(); i++)
+    {
+      textTickerTLL->addTick(  std::get<1>( ProcesosP[i-1] ) , QString::fromStdString(std::to_string( std::get<1>( ProcesosP[i-1] )   ) + " \n Llega \n Proceso \n " + std::get<0>(ProcesosP[i-1])) );
+    }
+
+
     ui->Graph->xAxis->setTicker(textTickerTLL);
     ui->Graph->xAxis2->setVisible(true);
     ui->Graph->xAxis2->setTickLabels(true);
