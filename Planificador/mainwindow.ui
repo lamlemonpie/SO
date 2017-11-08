@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1297</width>
+    <width>1317</width>
     <height>458</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <rect>
       <x>580</x>
       <y>10</y>
-      <width>711</width>
+      <width>731</width>
       <height>291</height>
      </rect>
     </property>
@@ -27,7 +27,7 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>950</x>
       <y>330</y>
       <width>81</width>
       <height>21</height>
@@ -99,7 +99,7 @@
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
-      <x>1060</x>
+      <x>1130</x>
       <y>330</y>
       <width>91</width>
       <height>21</height>
@@ -135,7 +135,7 @@
    <widget class="QPushButton" name="pushButton_4">
     <property name="geometry">
      <rect>
-      <x>960</x>
+      <x>1040</x>
       <y>330</y>
       <width>81</width>
       <height>21</height>
@@ -262,11 +262,16 @@
       <string>Round Robin</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Por Prioridad</string>
+     </property>
+    </item>
    </widget>
    <widget class="QLineEdit" name="lineEdit_4">
     <property name="geometry">
      <rect>
-      <x>1170</x>
+      <x>1230</x>
       <y>330</y>
       <width>71</width>
       <height>21</height>
@@ -279,7 +284,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>1170</x>
+      <x>1230</x>
       <y>310</y>
       <width>71</width>
       <height>20</height>
@@ -289,13 +294,36 @@
      <string>Quantum</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEdit_5">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>330</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>310</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Prioridad</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1297</width>
+     <width>1317</width>
      <height>22</height>
     </rect>
    </property>

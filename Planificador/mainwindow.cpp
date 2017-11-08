@@ -35,11 +35,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //x1.resize(10000); x2.resize(10000); y1.resize(10000); y2.resize(10000);
 
-    ui->tableWidget->setColumnCount(8);
+    ui->tableWidget->setColumnCount(9);
 
     QStringList L;
 
-    L << "Proceso" << "T. llegada" << "T. Servicio" << "T. finalización" <<"T. Retorno" << "T. R. Normalizado" << "T.Entrada"<<"T.Espera";
+    L << "Proceso" << "T. llegada" << "T. Servicio" << "T. finalización" <<"T. Retorno" << "T. R. Normalizado" << "T.Entrada"<<"T.Espera"<<"Prioridad";
     ui->tableWidget->setHorizontalHeaderLabels(L);
 
     ui->tableWidget->setColumnWidth(0,72);
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setColumnWidth(5,133);
     ui->tableWidget->setColumnWidth(6,76);
     ui->tableWidget->setColumnWidth(7,76);
+    ui->tableWidget->setColumnWidth(8,60);
 
     F=0;
     f=-1;
@@ -109,17 +110,12 @@ std::vector<procesos_it> MainWindow::buscarEnVector(std::string nombre, int valo
 
     for(procesos_it it = vector.begin(); it != vector.end(); it++ )
     {
-
         if( std::get<1>(*it) >= valori  && std::get<1>(*it) <= valorf && std::get<0>(*it) != nombre )
         {
-
             std::cout << " " << std::get<0>(*it) << std::endl;
             nuevosCola.push_back(it);
-
         }
-
     }
-
 
     return nuevosCola;
 }
@@ -731,28 +727,41 @@ void MainWindow::realtimeDataSlot()
 void MainWindow::on_pushButton_clicked()
 {
     F = ui->tableWidget->rowCount();
+    int index = ui->comboBox->currentIndex();
 
     ui->tableWidget->insertRow(F);
     ui->tableWidget->setItem(F,0, new QTableWidgetItem(ui->lineEdit_3->text()));
     ui->tableWidget->setItem(F,1, new QTableWidgetItem(ui->lineEdit->text()));
     ui->tableWidget->setItem(F,2, new QTableWidgetItem(ui->lineEdit_2->text()));
 
+
     proc = ui->lineEdit_3->text().toStdString();
     lleg = ui->lineEdit->text().toInt();
     serv = ui->lineEdit_2->text().toInt();
+    prior = ui->lineEdit_5->text().toInt();
 
     // OBTIENE QUANTUM
     quantum = ui->lineEdit_4->text().toInt();
     cout<<"Quantum: " << quantum<<endl;
 
     //Insertar en vector de procesos
-    tupla nuevo =  tupla(proc,lleg,serv);
-    Procesos.push_back(nuevo);
+    if(index == 4){
+        cout<<"Por Prioridad"<<endl;
+        ui->tableWidget->setItem(F,8, new QTableWidgetItem(ui->lineEdit_5->text()));
+        tuplaP nuevo= tuplaP(proc,lleg,serv,prior);
+        ProcesosP.push_back(nuevo);
+    }
+    else
+    {
+        tupla nuevo =  tupla(proc,lleg,serv);
+        Procesos.push_back(nuevo);
+    }
 
     ui->lineEdit->clear();
     ui->lineEdit_2->clear();
     ui->lineEdit_3->clear();
     //ui->lineEdit_4->clear();
+    ui->lineEdit_5->clear();
 }
 
 // FUNCION KAT

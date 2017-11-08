@@ -14,7 +14,9 @@
 #include "qcustomplot.h"
 
 typedef std::tuple<std::string,int,int> tupla;
+typedef std::tuple<std::string,int,int,int> tuplaP;
 typedef std::vector<tupla> procesos;
+typedef std::vector<tuplaP> procesosP;
 typedef std::vector<tupla>::iterator procesos_it;
 
 
@@ -102,6 +104,7 @@ private:
     int serv;
     int entr;
     int esp;
+    int prior;
 
     int quantum;
 
@@ -109,6 +112,7 @@ private:
     double RN_promedio=0;
 
     procesos Procesos;
+    procesosP ProcesosP;
 
     procesos ProcesosTemporal;
     procesos colaProcesos;
