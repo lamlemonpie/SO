@@ -71,6 +71,17 @@ void MainWindow::Posiciones()
     }
 }
 
+void MainWindow::PosicionesP()
+{
+    //Introducimos las posiciones.
+    for( unsigned long i = 0; i<ProcesosP.size(); ++i )
+    {
+        posiciones.insert( std::pair<std::string,int>(std::get<0>( ProcesosP[i] ) , i+1) );
+    }
+}
+
+
+
 void MainWindow::ImprimirVector(procesos vector)
 {
 
@@ -165,6 +176,32 @@ bool MainWindow::buscarEnTiempo(int tiempo, tupla &buscando, procesos &Procs)
     return false;
 }
 
+bool MainWindow::buscarVariosEnTiempo(int tiempo, std::vector<tuplaP> &buscando, procesosP &Procs)
+{
+
+    for (unsigned long i = 0; i<Procs.size(); i++)
+    {
+        if(std::get<1>(Procs[i]) == tiempo )
+        {
+            buscando.push_back(Procs[i]);
+            std:: cout << "Proceso encontrado en tiempo "<< tiempo << std::endl;
+            Procs.erase(Procs.begin() + i);
+            i--;
+
+        }
+    }
+
+    if(buscando.size() != 0)
+    {
+        cout << "entra" << endl;
+        return true;
+    }
+
+    std::cout << "Proceso no encontrado en tiempo " << tiempo << std::endl;
+    return false;
+
+}
+
 tupla MainWindow::buscarPorNombre(std::string nombre)
 {
     tupla encontrado;
@@ -179,6 +216,24 @@ tupla MainWindow::buscarPorNombre(std::string nombre)
     }
 
     return encontrado;
+}
+
+tuplaP MainWindow::buscarPorNombreP(string nombre)
+{
+
+    tuplaP encontrado;
+    for(auto i: ProcesosP)
+    {
+
+        if( std::get<0>(i) == nombre)
+        {
+            encontrado = i;
+        }
+
+    }
+
+    return encontrado;
+
 }
 
 
@@ -602,6 +657,93 @@ void MainWindow::round_Robin()
 
 }
 
+void MainWindow::prioridad()
+{
+
+    x1.push_back(0); y1.push_back(0);
+
+    ProcesosTemporalP = ProcesosP;
+
+    colaProcesosP.clear();
+
+
+    std::cout << "---" << std::endl;
+
+    int tiempo=0;
+
+    int cantProc = ProcesosP.size();
+
+    std::cout << "Entrando Prioridad" << std::endl;
+
+    while(cantProc != 0)
+    {
+
+
+        vector<tuplaP> buscando;
+        if( buscarVariosEnTiempo(tiempo,buscando,ProcesosTemporalP) )
+        {
+
+            colaProcesosP.insert(colaProcesosP.end(), buscando.begin(), buscando.end());
+
+
+            std::sort(colaProcesosP.begin(), colaProcesosP.end(),[]( tuplaP a, tuplaP b){
+                  return std::get<3>(a) <  std::get<3>(b);
+            });
+
+            //cantProc++;
+
+        }
+
+        if( colaProcesosP.size() == 0 )
+        {
+
+            x1.push_back(x1.last()+1);
+            y1.push_back(0);
+            cout << "[" << x1.last() << "," << y1.last() << "]" << endl;
+            tiempo++;
+
+
+        }
+        else
+        {
+
+            if(get<2>(colaProcesosP.front()) == 0)
+            {
+
+                tFinal.insert( std::pair<std::string,int>(std::get<0>( colaProcesosP.front() ) , tiempo));
+                cout << "El proceso " << get<0>( colaProcesosP.front() ) << " ha terminado en el tiempo " << tiempo << endl;
+                colaProcesosP.erase( colaProcesosP.begin() );
+
+                cantProc--;
+
+            }
+            else
+            {
+
+                  //Corregir verificación pesada
+                    if(std::get<2>(colaProcesosP.front()) == std::get<2>( buscarPorNombreP( std::get<0>(colaProcesosP.front()) )  ))
+                        tInicio.insert( std::pair<std::string,int>(std::get<0>( colaProcesosP.front() ) , tiempo) );
+
+                    x1.push_back(x1.last()+1);
+                    y1.push_back(posiciones.find( std::get<0>( colaProcesosP.front() ) )->second);
+                    cout << "Proceso: "<< get<0>( colaProcesosP.front() ) << "[" << x1.last() << "," << y1.last() << "]" << endl;
+                    get<2>(colaProcesosP.front())-= 1;
+                    tiempo++;
+            }
+
+
+
+
+        }
+
+
+
+
+    }
+
+
+}
+
 
 
 
@@ -990,11 +1132,12 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int index = ui->comboBox->currentIndex();
 
-    Posiciones();
+
 
     mostrar();
     if(index == 0)
     {
+        Posiciones();
         fifo();
         FIFO();
         mostrarNuevo();
@@ -1027,6 +1170,7 @@ void MainWindow::on_pushButton_2_clicked()
     //SPN
     else if(index == 1)
     {
+        Posiciones();
         primeroMasCorto();
         FuncionSPN();
         mostrarNuevo2();
@@ -1064,6 +1208,7 @@ void MainWindow::on_pushButton_2_clicked()
     //SRT
     else if( index == 2)
     {
+        Posiciones();
         //Grafica
         sjf_Expulsion();
         // Tabla
@@ -1105,6 +1250,7 @@ void MainWindow::on_pushButton_2_clicked()
 
     else if(index == 3)
     {
+        Posiciones();
         // Graficar
         round_Robin();
         // Tabla
@@ -1140,6 +1286,14 @@ void MainWindow::on_pushButton_2_clicked()
             ui->tableWidget->setItem(F,7, new QTableWidgetItem(QString::number(esp)));
             F++;
         }
+    }
+    else if(index == 4)
+    {
+
+        PosicionesP();
+
+        prioridad();
+
     }
 
     else
@@ -1198,5 +1352,8 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
     }
     else if(index==3){
         cout<<"ROUND ROBIN seleccionado"<<endl;
+    }
+    else if(index==4){
+        cout<<"Por prioridad seleccionado"<<endl;
     }
 }

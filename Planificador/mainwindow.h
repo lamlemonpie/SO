@@ -38,6 +38,7 @@ public:
     ~MainWindow();
 
     void Posiciones();
+    void PosicionesP();
 
     void ImprimirVector(procesos vector);
     void ImprimirEncontrados(std::vector<procesos_it> &encontrados);
@@ -47,12 +48,15 @@ public:
     void agregarCola(procesos &colaProcesos, std::vector<procesos_it> nuevosLlegados);
 
     bool buscarEnTiempo(int tiempo , tupla &buscando , procesos &Procs);
+    bool buscarVariosEnTiempo(int tiempo , std::vector<tuplaP> &buscando , procesosP &Procs);
     tupla buscarPorNombre(std::string nombre);
+    tuplaP buscarPorNombreP(std::string nombre);
 
     void fifo();
     void primeroMasCorto();
     void sjf_Expulsion();
     void round_Robin();
+    void prioridad();
 
 
     void Graficar();
@@ -115,7 +119,9 @@ private:
     procesosP ProcesosP;
 
     procesos ProcesosTemporal;
+    procesosP ProcesosTemporalP;
     procesos colaProcesos;
+    procesosP colaProcesosP;
 
     procesado Procesado;
     std::vector<otro> SPN;
