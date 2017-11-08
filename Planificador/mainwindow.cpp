@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setColumnWidth(4,75);
     ui->tableWidget->setColumnWidth(5,128);
     ui->tableWidget->setColumnWidth(6,71);
-    ui->tableWidget->setColumnWidth(7,71);
+    ui->tableWidget->setColumnWidth(7,66);
     ui->tableWidget->setColumnWidth(8,71);
 
     F=0;
