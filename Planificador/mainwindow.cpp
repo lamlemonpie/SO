@@ -42,15 +42,15 @@ MainWindow::MainWindow(QWidget *parent) :
     L << "Proceso" << "T. llegada" << "T. Servicio" << "T. finalización" <<"T. Retorno" << "T. R. Normalizado" << "T.Entrada"<<"T.Espera"<<"Prioridad";
     ui->tableWidget->setHorizontalHeaderLabels(L);
 
-    ui->tableWidget->setColumnWidth(0,72);
-    ui->tableWidget->setColumnWidth(1,80);
-    ui->tableWidget->setColumnWidth(2,80);
-    ui->tableWidget->setColumnWidth(3,105);
-    ui->tableWidget->setColumnWidth(4,80);
-    ui->tableWidget->setColumnWidth(5,133);
-    ui->tableWidget->setColumnWidth(6,76);
-    ui->tableWidget->setColumnWidth(7,76);
-    ui->tableWidget->setColumnWidth(8,60);
+    ui->tableWidget->setColumnWidth(0,65);
+    ui->tableWidget->setColumnWidth(1,75);
+    ui->tableWidget->setColumnWidth(2,75);
+    ui->tableWidget->setColumnWidth(3,100);
+    ui->tableWidget->setColumnWidth(4,75);
+    ui->tableWidget->setColumnWidth(5,128);
+    ui->tableWidget->setColumnWidth(6,71);
+    ui->tableWidget->setColumnWidth(7,71);
+    ui->tableWidget->setColumnWidth(8,71);
 
     F=0;
     f=-1;
@@ -1077,6 +1077,41 @@ void MainWindow::FuncionRoundRobin()
     RN_promedio = RN_promedio * 1.0 / n;
 }
 
+//KAT
+//FUNCION POR PRIORIDADES
+void MainWindow::PorPrioridades()
+{
+    int fin = 0;
+    int retorno = 0;
+    int TEntrada = 0;
+    int TEspera = 0;
+    int Prioridad = 0;
+    int n = ProcesosP.size();
+    double normalizado = 0;
+
+    for ( auto i:ProcesosP)
+    {
+        std::string nombre= std::get<0>(i);
+        TEntrada = (tInicio.find(nombre))->second;
+        cout<<"TEntrada: "<<TEntrada<<endl;
+        fin = (tFinal.find(nombre))->second;
+        cout<<"fin: "<<fin<<endl;
+        retorno = fin - std::get<1>(i);
+        TEspera = retorno - std::get<2>(i);
+        Prioridad = std::get<3>(i);
+        normalizado = retorno*1.0 /std::get<2>(i);
+
+        R_promedio = R_promedio + retorno;
+        RN_promedio = RN_promedio + normalizado;
+
+        otroP nuevo = otroP(std::get<0>(i),std::get<1>(i),std::get<2>(i),TEntrada,TEspera,fin,retorno, normalizado,Prioridad);
+        Pr.push_back(nuevo);
+    }
+
+    R_promedio = R_promedio * 1.0 / n;
+    RN_promedio = RN_promedio * 1.0 / n;
+}
+
 // KAT
 //Boton borrar todo
 void MainWindow::on_pushButton_3_clicked()
@@ -1291,8 +1326,42 @@ void MainWindow::on_pushButton_2_clicked()
     {
 
         PosicionesP();
-
+        // Graficar
         prioridad();
+        // Tabla
+        PorPrioridades();
+        cout<<"POR PRIORIDADES"<<endl;
+
+        ui->tableWidget->setRowCount(0);   //resetea tabla
+        int fin = 0;
+        int retorno = 0;
+        double normalizado = 0;
+        F=0;
+
+        for(auto i:Pr)
+        {
+            proc = std::get<0>(i);
+            lleg = std::get<1>(i);
+            serv = std::get<2>(i);
+            entr = std::get<3>(i);
+            esp = std::get<4>(i);
+            fin = std::get<5>(i);
+            retorno = std::get<6>(i);
+            normalizado = std::get<7>(i);
+            prior = std::get<8>(i);
+
+            ui->tableWidget->insertRow(F);
+            ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
+            ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
+            ui->tableWidget->setItem(F,2, new QTableWidgetItem(QString::number(serv)));
+            ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
+            ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
+            ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
+            ui->tableWidget->setItem(F,6, new QTableWidgetItem(QString::number(entr)));
+            ui->tableWidget->setItem(F,7, new QTableWidgetItem(QString::number(esp)));
+            ui->tableWidget->setItem(F,8, new QTableWidgetItem(QString::number(prior)));
+            F++;
+        }
 
     }
 

@@ -23,6 +23,7 @@ typedef std::vector<tupla>::iterator procesos_it;
 typedef std::tuple<std::string,int,int,int,int,double> registro;
 typedef std::vector<registro> procesado;
 typedef std::tuple<std::string , int,int,int,int,int,int,double> otro;
+typedef std::tuple<std::string , int,int,int,int,int,int,double,int> otroP;
 //typedef std::vector<otro> listo2;
 
 namespace Ui {
@@ -86,6 +87,8 @@ private slots:
 
     void FuncionRoundRobin();
 
+    void PorPrioridades();
+
     //Moverse dentro del Grafico
     void horzScrollBarChanged(int value);
     void vertScrollBarChanged(int value);
@@ -127,6 +130,7 @@ private:
     std::vector<otro> SPN;
     std::vector<otro> SRT;
     std::vector<otro> RR;
+    std::vector<otroP> Pr;
 
     std::map <std::string, int> tInicio;
     std::map <std::string, int> tFinal;
