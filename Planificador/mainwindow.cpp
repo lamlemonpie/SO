@@ -1173,8 +1173,6 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int index = ui->comboBox->currentIndex();
 
-
-
     mostrar();
     if(index == 0)
     {
@@ -1198,6 +1196,9 @@ void MainWindow::on_pushButton_2_clicked()
             retorno = std::get<4>(i);
             normalizado = std::get<5>(i);
 
+            entr = fin - serv;
+            esp = retorno - serv;
+
             ui->tableWidget->insertRow(F);
             ui->tableWidget->setItem(F,0, new QTableWidgetItem(QString::fromStdString(proc)));
             ui->tableWidget->setItem(F,1, new QTableWidgetItem(QString::number(lleg)));
@@ -1205,6 +1206,8 @@ void MainWindow::on_pushButton_2_clicked()
             ui->tableWidget->setItem(F,3, new QTableWidgetItem(QString::number(fin)));
             ui->tableWidget->setItem(F,4, new QTableWidgetItem(QString::number(retorno)));
             ui->tableWidget->setItem(F,5, new QTableWidgetItem(QString::number(normalizado)));
+            ui->tableWidget->setItem(F,6, new QTableWidgetItem(QString::number(entr)));
+            ui->tableWidget->setItem(F,7, new QTableWidgetItem(QString::number(esp)));
             F++;
         }
     }
