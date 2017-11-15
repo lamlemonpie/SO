@@ -121,7 +121,7 @@ std::vector<procesos_it> MainWindow::buscarEnVector(std::string nombre, int valo
 
     for(procesos_it it = vector.begin(); it != vector.end(); it++ )
     {
-        if( std::get<1>(*it) >= valori  && std::get<1>(*it) <= valorf && std::get<0>(*it) != nombre )
+        if( std::get<1>(*it) >= valori  && std::get<1>(*it) <= valorf && std::get<0>(*it) != nombre && buscarEnColaProcesos(std::get<0>(*it)) == false )
         {
             std::cout << " " << std::get<0>(*it) << std::endl;
             nuevosCola.push_back(it);
@@ -236,6 +236,33 @@ tuplaP MainWindow::buscarPorNombreP(string nombre)
 
 }
 
+bool MainWindow::buscarEnColaProcesos(string nombre)
+{
+
+    for(auto i: colaProcesos)
+    {
+
+        if(std::get<0>(i) == nombre)
+            return true;
+    }
+
+    return false;
+}
+
+void MainWindow::imprimirColaProcesos()
+{
+
+    cout<< "Cola de Procesos:" << endl;
+    for(auto i: colaProcesos)
+    {
+
+        cout << get<0>(i) << endl;
+
+    }
+    cout << endl;
+
+}
+
 
 void MainWindow::fifo()
 {
@@ -334,7 +361,7 @@ void MainWindow::primeroMasCorto()
 
         if( std::get<1>(colaProcesos.front()) <= x1.last() )
         {
-             std::cout << "entra a graficar" << std::endl;
+            std::cout << "entra a graficar el proceso: " << std::get<0>(colaProcesos.front()) << std::endl;
             double tmp = x1.last() + 1;
             double tmp2 = std::get<2>(colaProcesos.front()) + x1.last();
             tInicio.insert( std::pair<std::string,int>(std::get<0>( colaProcesos.front() ) , tmp-1) );
@@ -351,7 +378,7 @@ void MainWindow::primeroMasCorto()
         }
         else
         {
-            std::cout << "entra a graficar" << std::endl;
+            std::cout << "entra a graficar el proc: " << std::get<0>(colaProcesos.front()) << std::endl;
             double tmp = x1.last() + 1;
             double tmp2 = std::get<1>(colaProcesos.front()) + x1.last();
 
@@ -379,6 +406,8 @@ void MainWindow::primeroMasCorto()
         }
 
         nombre = std::get<0>(colaProcesos.front());
+
+        imprimirColaProcesos();
 
         std::vector<procesos_it> nuevosLlegados = buscarEnVector(nombre , tInicio.find( nombre )->second ,x1.last(),ProcesosTemporal);
 

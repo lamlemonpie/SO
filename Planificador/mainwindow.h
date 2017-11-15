@@ -52,6 +52,8 @@ public:
     bool buscarVariosEnTiempo(int tiempo , std::vector<tuplaP> &buscando , procesosP &Procs);
     tupla buscarPorNombre(std::string nombre);
     tuplaP buscarPorNombreP(std::string nombre);
+    bool buscarEnColaProcesos(std::string nombre);
+    void imprimirColaProcesos();
 
     void fifo();
     void primeroMasCorto();
