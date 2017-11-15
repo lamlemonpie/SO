@@ -54,6 +54,8 @@ public:
     tuplaP buscarPorNombreP(std::string nombre);
     bool buscarEnColaProcesos(std::string nombre);
     void imprimirColaProcesos();
+    bool buscarTicker(int tiempo, tupla &tmp);
+    bool buscarTicker2(int tiempo, tuplaP &tmp);
 
     void fifo();
     void primeroMasCorto();

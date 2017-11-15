@@ -176,6 +176,8 @@ bool MainWindow::buscarEnTiempo(int tiempo, tupla &buscando, procesos &Procs)
     return false;
 }
 
+
+
 bool MainWindow::buscarVariosEnTiempo(int tiempo, std::vector<tuplaP> &buscando, procesosP &Procs)
 {
 
@@ -256,11 +258,41 @@ void MainWindow::imprimirColaProcesos()
     for(auto i: colaProcesos)
     {
 
-        cout << get<0>(i) << endl;
+        cout << get<0>(i)  << "|" << get<1>(i) << "|" << get<2>(i) << endl;
 
     }
     cout << endl;
 
+}
+
+bool MainWindow::buscarTicker(int tiempo, tupla &tmp)
+{
+
+    cout << "entra buscar ticker" << endl;
+    for(auto i: Procesos)
+    {
+        if(std::get<1>(i) == tiempo)
+        {
+            tmp = i;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MainWindow::buscarTicker2(int tiempo, tuplaP &tmp)
+{
+    for(auto i: ProcesosP)
+    {
+        if(std::get<1>(i) == tiempo)
+        {
+            cout << "Encontrado proceso: " << std::get<0>(i) << endl;
+            tmp = i;
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -811,15 +843,58 @@ void MainWindow::Graficar()
     QSharedPointer<QCPAxisTickerText> textTickerTLL(new QCPAxisTickerText);
     textTickerTLL->addTick(0, "Inicio");
 
-    for (unsigned long i = 1; i<=Procesos.size(); i++)
+    int index = ui->comboBox->currentIndex();
+
+    if(index >= 0 && index <4)
     {
-      textTickerTLL->addTick(  std::get<1>( Procesos[i-1] ) , QString::fromStdString(std::to_string( std::get<1>( Procesos[i-1] )   ) + " \n Llega \n Proceso \n " + std::get<0>(Procesos[i-1])) );
+        cout << "FIFO / SRT / SJF / RR" << endl;
+        double sumatotal = get<1>(Procesos.front());
+        tupla tmp;
+        for(auto i: Procesos)
+        {
+            sumatotal = sumatotal + get<2>(i);
+        }
+
+
+
+        for (unsigned long i = 0; i<=sumatotal; i++)
+        {
+
+            if(buscarTicker(i, tmp) == false)
+            {
+                textTickerTLL->addTick(i,QString::fromStdString(std::to_string( i  ) ));
+            }
+
+            else
+            {
+                textTickerTLL->addTick(  std::get<1>( Procesos[i] ) , QString::fromStdString(std::to_string( std::get<1>( Procesos[i] )   ) + " \n Llega \n Proceso \n " + std::get<0>(Procesos[i])) );
+            }
+
+        }
+
+        cout << "final" << endl;
+    }
+    else{
+
+        cout << "Prioridad" << endl;
+        double sumatotal = get<1>(ProcesosP.front());
+        tuplaP tmp;
+        for(auto i: ProcesosP)
+        {
+            sumatotal = sumatotal + get<2>(i);
+        }
+
+        for (unsigned long i = 0; i<=sumatotal; i++)
+        {
+          if(buscarTicker2(i,tmp) == false)
+              textTickerTLL->addTick(i,QString::fromStdString(std::to_string( i  ) ));
+            else
+            textTickerTLL->addTick(  std::get<1>( tmp ) , QString::fromStdString(std::to_string( std::get<1>( tmp )   ) + " \n Llega \n Proceso \n " + std::get<0>(tmp)) );
+        }
+
     }
 
-    for (unsigned long i = 1; i<=ProcesosP.size(); i++)
-    {
-      textTickerTLL->addTick(  std::get<1>( ProcesosP[i-1] ) , QString::fromStdString(std::to_string( std::get<1>( ProcesosP[i-1] )   ) + " \n Llega \n Proceso \n " + std::get<0>(ProcesosP[i-1])) );
-    }
+
 
 
     ui->Graph->xAxis->setTicker(textTickerTLL);
